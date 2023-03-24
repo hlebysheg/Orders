@@ -1,0 +1,38 @@
+﻿@model Orders.Models.DTO.OrderItemDto
+<div class="modal-content">
+	<div class="modal-header">
+		<h4>Create order Item</h4>
+		<button class="btn-close" data-bs-dismiss="modal" area-hidden="true"></button>
+	</div>
+	<div class="modal-body">
+		<dl class="dl-horizontal">
+			@*<form method="post" action="/OrderItem/Create" id="create">*@
+			@using (Html.BeginForm("Create", "OrderItem", FormMethod.Post))
+			{
+				<div class="form-group mb-2">
+					<label for="Number">Order Id</label>
+					@Html.EditorFor(x=> x.OrderId,new { htmlAttributes = new { @class = "form-control" } })
+				</div>
+				<div class="form-group mb-2">
+					<label for="Number">Name</label>
+					@Html.EditorFor(x=> x.Name,new { htmlAttributes = new { @class = "form-control" } })
+					@*<input type="text" class="form-control" placeholder="Number" />*@
+				</div>
+				<div class="form-group mb-2">
+					<label for="ProviderId">Quantity</label>
+					@Html.EditorFor(x=> x.Quantity,new { htmlAttributes = new { @class = "form-control" } })
+					@*<input type="text" class="form-control" placeholder="ProviderId" />*@
+				</div>
+				<div class="form-group mb-2">
+					<label for="startDate">Unit</label>
+					@Html.EditorFor(x=> x.Unit,new { htmlAttributes = new { @class = "form-control" } })
+					@*<input id="startDate" class="form-control" type="date" />*@
+				</div>
+				<div class="form-group mb-2">
+					<input type="submit" class="form-control" value="Отправить" />
+				</div>
+			}
+			@*         </form>*@
+		</dl>
+	</div>
+</div>

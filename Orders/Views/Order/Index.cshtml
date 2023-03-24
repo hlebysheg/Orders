@@ -1,0 +1,97 @@
+﻿@using Orders.Models.DB
+@model IEnumerable<Order>
+@{
+	ViewBag.Title = "Index";
+}
+<div><b>Order table</b><br /></div>
+@{
+	<form class="mb-1" method="get">
+		<div class="row">
+			<div class="col">
+				<label for="startDate">Start Date</label>
+				<input id="startDate" name="startDate" value="@ViewBag.startDate" class="form-control" type="date" />
+			</div>
+			<div class="col">
+				<label for="endDate">End Date</label>
+				<input id="endDate" name="endDate" class="form-control" type="date" />
+			</div>
+			<div class="col">
+				<label for="ProviderSelector">Order Provider</label>
+				<input id="ProviderSelector" name="ProviderId" class="form-control" type="text" />
+			</div>
+			<div class="col align-self-end">
+				<button type="submit" class="btn btn-primary">use Filter</button>
+			</div>
+		</div>
+	</form>
+	<div class="mb-2 d-flex justify-content-around">
+		<button id="create" class="btn btn-primary">Create</button>
+	</div>
+	OrderTable(Model);
+	<div id="modDialog" class="modal fade">
+		<div id="dialogContent" class="modal-dialog"></div>
+	</div>
+
+}
+
+@section scripts
+{
+	<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$.ajaxSetup({ cache: false });
+			$("#create").click(function(e) {
+				e.preventDefault();
+
+				$.get("/Order/Create", function(data) {
+					$('#dialogContent').html(data);
+					$('#modDialog').modal('show');
+				});
+			});
+		})
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			let searchParams = new URLSearchParams(window.location.search)
+			let isStart = searchParams.has('startDate');
+			let isEnd = searchParams.has('endDate');
+			let isProvider = searchParams.has('ProviderId');
+
+			if (isStart && isEnd && isProvider) {
+				$('#startDate').val(searchParams.get('startDate'));
+				$('#endDate').val(searchParams.get('endDate'));
+				$('#ProviderSelector').val(searchParams.get('ProviderId'));
+			}
+			else {
+				let date = dayjs().format('YYYY-MM-DD')
+				let startDate = dayjs().subtract(1, 'month').format('YYYY-MM-DD')
+				$('#startDate').val(startDate);
+				$('#endDate').val(date);
+				$('#ProviderSelector').val(0);
+			}
+		})
+	</script>
+}
+
+	@functions {
+	void OrderTable(IEnumerable<Order> Orders)
+	{
+		<table class="table table-bordered table-responsive table-hover">
+			<tr>
+				<th>Order Id </th>
+				<th>Order number </th>
+				<th>Order Date </th>
+				<th>Provider </th>
+			</tr>
+			@foreach (var d in Orders)
+			{
+				<tr onclick="location.href = '/DetailInfo/@d.Id'">
+					<td>@d.Id</td>
+					<td>@d.Number</td>
+					<td>@d.Date.ToString("dd.MM.yyyy")</td>
+					<td>@d.Provider.Name</td>
+				</tr>
+			}
+		</table>
+	}
+}

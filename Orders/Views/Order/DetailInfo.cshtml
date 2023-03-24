@@ -1,0 +1,75 @@
+﻿@using Orders.Models.DB
+@{
+	@model Order
+
+}
+<div class="d-flex flex-column justify-content-center w-75">
+	<form class="w-100 ">
+		<div class="form-group row mb-2">
+			<label for="colFormLabel" class="col-form-label">Number</label>
+			<div class="col">
+				<input type="email" value="@Model.Number" disabled="true" class="form-control" id="Number" placeholder="col-form-label">
+			</div>
+		</div>
+		<div class="form-group row mb-2">
+			<label for="colFormLabelSm" class=" col-form-label">Date</label>
+			<div class="col">
+				<input type="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" id="Date" placeholder="col-form-label-sm">
+			</div>
+		</div>
+		<div class="form-group row mb-2">
+			<label for="colFormLabelLg" class="col-form-label">Provider</label>
+			<div class="col">
+				<input type="email" class="form-control " id="ProviderId" value="@Model.ProviderId" placeholder="col-form-label-lg">
+			</div>
+		</div>
+	</form>
+	<div class="mb-2 d-flex justify-content-around">
+		<button id="create" class="btn btn-primary">Create</button>
+	</div>
+	<div id="modDialog" class="modal fade">
+		<div id="dialogContent" class="modal-dialog"></div>
+	</div>
+	@{
+		OrderItemTable(Model.OrderItems);
+	}
+</div>
+@functions {
+	void OrderItemTable(IEnumerable<OrderItem> item)
+	{
+		<table class="table table-bordered table-responsive table-hover w-100">
+			<tr>
+				<th>Order Id </th>
+				<th>Name </th>
+				<th>Quantity </th>
+				<th>Unit</th>
+			</tr>
+			@foreach (var d in item)
+			{
+				<tr onclick="location.href = '/DetailInfo/@d.Id'">
+					<td>@d.Id</td>
+					<td>@d.Name</td>
+					<td>@d.Quantity</td>
+					<td>@d.Unit</td>
+				</tr>
+			}
+		</table>
+	}
+}
+
+@section scripts
+{
+	<script type="text/javascript">
+		$(function() {
+			$.ajaxSetup({ cache: false });
+			$("#create").click(function(e) {
+				e.preventDefault();
+
+				$.get("/OrderItem/DetailsCreate/@Model.Id", function(data) {
+					$('#dialogContent').html(data);
+					$('#modDialog').modal('show');
+				});
+			});
+		})
+	</script>
+}
