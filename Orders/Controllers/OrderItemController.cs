@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Orders.Models.DB;
 using Orders.Models.DTO;
 using Orders.Service.OrderItems;
 
@@ -17,18 +18,25 @@ namespace Orders.Controllers
         {
             return View();
         }
-
-        // GET: OrderItemController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
         public ActionResult DetailsCreate(int id)
         {
             ViewBag.OrderId = id;
             var model = new OrderItemDto();
             model.OrderId = id;
             return PartialView(model);
+        }
+        public async Task<IActionResult> DetailsEdit(int id)
+        {
+            var response = await _orderItem.GetOnceById(id);
+            return PartialView(response);
+        }
+
+        [HttpPost]
+        [Route("/OrderItem/Edit")]//
+        public async Task<ActionResult> EditAsync([FromForm] OrderItem dto)
+        {
+            await _orderItem.EditAsync(dto);
+            return RedirectToAction("DetailInfo", "Order", new { id = dto.OrderId });
         }
 
         [HttpPost]
@@ -38,49 +46,17 @@ namespace Orders.Controllers
             return RedirectToAction("DetailInfo", "Order", new { id = dto.OrderId });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-
-        // GET: OrderItemController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: OrderItemController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
 
         // GET: OrderItemController/Delete/5
-        public ActionResult Delete(int id)
+        [HttpGet]
+        [Route("/OrderItem/Delete/{id}")]//
+        public async Task<IActionResult> DeleteOrderAsync(int Id)
         {
-            return View();
-        }
+            var redirectId = await _orderItem.GetOnceById(Id);
 
-        // POST: OrderItemController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _orderItem.DeleteAsync(Id);
+
+            return RedirectToAction("DetailInfo", "Order", new { id = redirectId.OrderId });
         }
     }
 }

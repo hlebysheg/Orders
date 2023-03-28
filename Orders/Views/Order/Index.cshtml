@@ -4,6 +4,11 @@
 	ViewBag.Title = "Index";
 }
 <div><b>Order table</b><br /></div>
+
+@if (TempData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger" role="alert"><b>@TempData["ErrorMessage"]</b><br /></div>
+}
 @{
 	<form class="mb-1" method="get">
 		<div class="row">
@@ -16,11 +21,26 @@
 				<input id="endDate" name="endDate" class="form-control" type="date" />
 			</div>
 			<div class="col">
+				<label for="ProviderSelector">Order option</label>
+				<select class="form-select" aria-label="Default select example" name="column" id="column">
+					<option value="0">Id</option>
+					<option value="1">ProviderId</option>
+					<option value="2">Date</option>
+					<option value="3">Number</option>
+				</select>
+			</div>
+			<div class="col align-self-end">
 				<label for="ProviderSelector">Order Provider</label>
-				<input id="ProviderSelector" name="ProviderId" class="form-control" type="text" />
+				<select class="form-select" aria-label="Default select example" name="ProviderId" id="ProviderSelector">
+					@foreach (var d in @ViewBag.provider)
+					{
+						<option value="@d.Id">@d.Name</option>
+					}
+				</select>
 			</div>
 			<div class="col align-self-end">
 				<button type="submit" class="btn btn-primary">use Filter</button>
+				<button id="clear" class="btn btn-primary">Clear</button>
 			</div>
 		</div>
 	</form>
@@ -35,8 +55,27 @@
 }
 
 @section scripts
-{
+	{
 	<script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+	<script>
+		$(function() {
+			// setTimeout() function will be fired after page is loaded
+			// it will wait for 5 sec. and then will fire
+			// $("#successMessage").hide() function
+			setTimeout(function() {
+				$(".alert-danger").hide()
+			}, 6000);
+		});
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			$.ajaxSetup({ cache: false });
+			$("#clear").click(function(e) {
+				e.preventDefault();
+				location.href = `/`;
+			});
+		})
+	</script>
 	<script type="text/javascript">
 		$(function() {
 			$.ajaxSetup({ cache: false });
@@ -55,12 +94,13 @@
 			let searchParams = new URLSearchParams(window.location.search)
 			let isStart = searchParams.has('startDate');
 			let isEnd = searchParams.has('endDate');
-			let isProvider = searchParams.has('ProviderId');
+			let isColumn = searchParams.has('column');
 
-			if (isStart && isEnd && isProvider) {
+			if (isStart && isEnd && isColumn) {
 				$('#startDate').val(searchParams.get('startDate'));
 				$('#endDate').val(searchParams.get('endDate'));
-				$('#ProviderSelector').val(searchParams.get('ProviderId'));
+				$('#ProviderSelector').val(searchParams.get('ProviderId') ?? 0);
+				$('#column').val(searchParams.get('column'));
 			}
 			else {
 				let date = dayjs().format('YYYY-MM-DD')
@@ -68,8 +108,29 @@
 				$('#startDate').val(startDate);
 				$('#endDate').val(date);
 				$('#ProviderSelector').val(0);
+				$('#column').val(0);
 			}
 		})
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			$.ajaxSetup({ cache: false });
+			$(".btn-outline-primary").click(function(e) {
+				e.stopPropagation();
+			});
+			$(".btn-outline-danger").click(function(e) {
+				e.stopPropagation();
+			});
+		})
+		function rowEditClick(id) {
+			$.get(`/Order/Edit/${id}`, function(data) {
+				$('#dialogContent').html(data);
+				$('#modDialog').modal('show');
+			});
+		}
+		function rowDeleteClick(id) {
+			location.href = `/Order/Delete/${id}`;
+		}
 	</script>
 }
 
@@ -82,6 +143,7 @@
 				<th>Order number </th>
 				<th>Order Date </th>
 				<th>Provider </th>
+				<th>Actions </th>
 			</tr>
 			@foreach (var d in Orders)
 			{
@@ -90,6 +152,14 @@
 					<td>@d.Number</td>
 					<td>@d.Date.ToString("dd.MM.yyyy")</td>
 					<td>@d.Provider.Name</td>
+					<td>
+						<button type="button" class="btn  btn-outline-primary" onclick="rowEditClick(@d.Id)">
+							<i class="bi bi-pencil"> Edit </i>
+						</button>
+						<button type="button" class="btn  btn-outline-danger" onclick="rowDeleteClick(@d.Id)">
+							<i class="bi bi-trash3"> Delete </i>
+						</button>
+					</td>
 				</tr>
 			}
 		</table>

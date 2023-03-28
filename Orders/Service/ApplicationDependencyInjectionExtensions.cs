@@ -2,6 +2,7 @@
 using Ninject.Modules;
 using Orders.Service.OrderItems;
 using Orders.Service.Orders;
+using Orders.Service.Providers;
 
 namespace Orders.Service
 {
@@ -11,7 +12,8 @@ namespace Orders.Service
         {
             return services
                 .AddScoped<IOrderService, OrderService>()
-                .AddScoped<IOrderItemService, OrderItemService>();
+                .AddScoped<IOrderItemService, OrderItemService>()
+                .AddScoped<IProviderService, ProviderService>();
         }
     }
 }

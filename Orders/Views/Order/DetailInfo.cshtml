@@ -3,7 +3,7 @@
 	@model Order
 
 }
-<div class="d-flex flex-column justify-content-center w-75">
+<div class="d-flex flex-column justify-content-center">
 	<form class="w-100 ">
 		<div class="form-group row mb-2">
 			<label for="colFormLabel" class="col-form-label">Number</label>
@@ -14,13 +14,13 @@
 		<div class="form-group row mb-2">
 			<label for="colFormLabelSm" class=" col-form-label">Date</label>
 			<div class="col">
-				<input type="date" class="form-control" value="@Model.Date.ToString("yyyy-MM-dd")" id="Date" placeholder="col-form-label-sm">
+				<input type="date" class="form-control" disabled="true" value="@Model.Date.ToString("yyyy-MM-dd")" id="Date" placeholder="col-form-label-sm">
 			</div>
 		</div>
 		<div class="form-group row mb-2">
 			<label for="colFormLabelLg" class="col-form-label">Provider</label>
 			<div class="col">
-				<input type="email" class="form-control " id="ProviderId" value="@Model.ProviderId" placeholder="col-form-label-lg">
+				<input type="email" class="form-control " disabled="true" id="ProviderId" value="@Model.ProviderId" placeholder="col-form-label-lg">
 			</div>
 		</div>
 	</form>
@@ -43,14 +43,23 @@
 				<th>Name </th>
 				<th>Quantity </th>
 				<th>Unit</th>
+				<th>Actions</th>
 			</tr>
 			@foreach (var d in item)
 			{
-				<tr onclick="location.href = '/DetailInfo/@d.Id'">
+				<tr>
 					<td>@d.Id</td>
 					<td>@d.Name</td>
 					<td>@d.Quantity</td>
 					<td>@d.Unit</td>
+					<td>
+						<button type="button" class="btn  btn-outline-primary" onclick="rowEditClick(@d.Id)">
+							<i class="bi bi-pencil"> Edit </i>
+						</button>
+						<button type="button" class="btn  btn-outline-danger" onclick="rowDeleteClick(@d.Id)">
+							<i class="bi bi-trash3"> Delete </i>
+						</button>
+					</td>
 				</tr>
 			}
 		</table>
@@ -71,5 +80,25 @@
 				});
 			});
 		})
+	</script>
+	<script type="text/javascript">
+		$(function() {
+			$.ajaxSetup({ cache: false });
+			$(".btn-outline-primary").click(function(e) {
+                e.stopPropagation();
+			});
+			$(".btn-outline-danger").click(function(e) {
+                e.stopPropagation();
+			});
+		})
+		function rowEditClick(id) {
+			$.get(`/OrderItem/DetailsEdit/@Model.Id`, function(data) {
+				$('#dialogContent').html(data);
+				$('#modDialog').modal('show');
+			});
+		}
+		function rowDeleteClick(id) {
+            location.href = `/OrderItem/Delete/${id}`;
+		}
 	</script>
 }

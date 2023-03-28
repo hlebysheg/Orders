@@ -7,7 +7,7 @@ namespace Orders.Models.DB
     public class OrderItem
     {
         [Required]
-        public int Id { get; private set; }
+        public int Id { get; set; }
 
         [Required]
         public string Name { get; set; }
@@ -44,6 +44,10 @@ namespace Orders.Models.DB
         public OrderItem(int id)
         {
             Id = id;
+        }
+        public OrderItem()
+        {
+
         }
     }
 }

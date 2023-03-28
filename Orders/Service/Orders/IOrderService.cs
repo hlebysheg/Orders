@@ -10,7 +10,7 @@ namespace Orders.Service.Orders
         Task<List<Order>> GetByFilterAsync(OrderFilter filter);
         Task<Order?> GetOnceById(int id);
         Task<Order?> CreateAsync(OrderDto order);
-        Task<Order> UpdateAsync(Order order);
+        Task<Order?> UpdateAsync(int id, OrderDto order);
         Task<bool> DeleteAsync(int id);
     }
 }
